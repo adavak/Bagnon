@@ -18,15 +18,16 @@ Frame.MoneySpacing = 0
 
 function Frame:New(id)
 	local f = self:Bind(CreateFrame('Frame', ADDON .. 'Frame' .. id, UIParent))
-	f.frameID, f.quality = id, 0
-	f.profile = f:GetBaseProfile()
+	f.profile = Addon.profile[id]
+	f.frameID = id
+	f.quality = 0
 
 	f:Hide()
 	f:SetMovable(true)
 	f:SetToplevel(true)
 	f:EnableMouse(true)
 	f:SetClampedToScreen(true)
-	f:FindRules()
+	f:UpdateRules()
 	f:SetBackdrop{
 	  bgFile = [[Interface\ChatFrame\ChatFrameBackground]],
 	  edgeFile = [[Interface\Tooltips\UI-Tooltip-Border]],
@@ -44,7 +45,7 @@ end
 
 function Frame:RegisterMessages()
 	self:RegisterMessage('UPDATE_ALL', 'Update')
-	self:RegisterMessage('RULES_LOADED', 'FindRules')
+	self:RegisterMessage('RULES_LOADED', 'UpdateRules')
 	self:RegisterFrameMessage('BAG_FRAME_TOGGLED', 'Layout')
 	self:RegisterFrameMessage('ITEM_FRAME_RESIZED', 'Layout')
 	self:Update()
@@ -54,7 +55,6 @@ end
 --[[ Update ]]--
 
 function Frame:Update()
-	self.profile = self:GetBaseProfile()
 	self:UpdateAppearance()
 	self:UpdateBackdrop()
 	self:Layout()
@@ -123,8 +123,8 @@ function Frame:PlaceMenuButtons()
 end
 
 function Frame:ListMenuButtons()
-	if self:HasOwnerSelector() then
-		tinsert(self.menuButtons, self.ownerSelector or self:CreateOwnerSelector())
+	if self:HasPlayerSelector() then
+		tinsert(self.menuButtons, self.playerSelector or self:CreatePlayerSelector())
 	end
 
 	if self:HasBagToggle() then
@@ -140,10 +140,6 @@ function Frame:ListMenuButtons()
 	end
 end
 
-function Frame:HasOwnerSelector()
-	return Addon:MultipleOwnersFound()
-end
-
 function Frame:HasSearchToggle()
 	return self.profile.search
 end
@@ -154,11 +150,6 @@ end
 
 function Frame:HasSortButton()
 	return self.profile.sort
-end
-
-function Frame:CreateOwnerSelector()
-	self.ownerSelector = Addon.OwnerSelector:New(self)
-	return self.ownerSelector
 end
 
 function Frame:CreateSearchToggle()
@@ -232,7 +223,7 @@ function Frame:CreateBagFrame()
 end
 
 function Frame:IsBagFrameShown()
-	return self:GetProfile().showBags
+	return self.profile.showBags
 end
 
 function Frame:PlaceBagFrame()
@@ -287,6 +278,18 @@ end
 function Frame:CreateTitleFrame()
 	local f = Addon.TitleFrame:New(self.Title, self)
 	self.titleFrame = f
+	return f
+end
+
+
+-- player selector
+function Frame:HasPlayerSelector()
+	return Addon.Cache:HasCache()
+end
+
+function Frame:CreatePlayerSelector()
+	local f = Addon.PlayerSelector:New(self)
+	self.playerSelector = f
 	return f
 end
 

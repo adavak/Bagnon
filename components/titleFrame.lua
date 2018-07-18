@@ -28,7 +28,7 @@ function TitleFrame:New(title, parent)
 	b:SetScript('OnClick', b.OnClick)
 	b.title = title
 
-	b:RegisterFrameMessage('OWNER_CHANGED', 'Update')
+	b:RegisterFrameMessage('PLAYER_CHANGED', 'Update')
 	b:Update()
 
 	return b
@@ -83,7 +83,7 @@ end
 --[[ API ]]--
 
 function TitleFrame:Update()
-	self:SetFormattedText(self.title, self:GetOwnerInfo().name)
+	self:SetFormattedText(self.title, self:GetPlayer())
 	self:GetFontString():SetAllPoints(self)
 end
 

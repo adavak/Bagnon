@@ -22,7 +22,9 @@ function Addon:CreateFrameLoader(module, method)
   local addon = ADDON .. '_' .. module
   if GetAddOnEnableState(UnitName('player'), addon) >= 2 then
     _G[method] = function()
-			LoadAddOn(addon)
+      if LoadAddOn(addon) then
+        self:GetModule(module):OnOpen()
+      end
     end
   end
 end
