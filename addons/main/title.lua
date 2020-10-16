@@ -1,23 +1,19 @@
 --[[
-	titleFrame.lua
+	title.lua
 		A title frame widget
 --]]
 
 
 local ADDON, Addon = ...
 local L = LibStub('AceLocale-3.0'):GetLocale(ADDON)
-local TitleFrame = Addon:NewClass('TitleFrame', 'Button')
+local Title = Addon.Tipped:NewClass('Title', 'Button')
 
 
---[[ Constructor ]]--
+--[[ Construct ]]--
 
-function TitleFrame:New(title, parent)
-	local b = self:Bind(CreateFrame('Button', nil, parent))
-
-	b:SetToplevel(true)
-	b:SetNormalFontObject('GameFontNormalLeft')
-	b:SetHighlightFontObject('GameFontHighlightLeft')
-	b:RegisterForClicks('anyUp')
+function Title:New(parent, title)
+	local b = self:Super(Title):New(parent)
+	b.title = title
 
 	b:SetScript('OnHide', b.OnMouseUp)
 	b:SetScript('OnMouseDown', b.OnMouseDown)
@@ -26,9 +22,14 @@ function TitleFrame:New(title, parent)
 	b:SetScript('OnEnter', b.OnEnter)
 	b:SetScript('OnLeave', b.OnLeave)
 	b:SetScript('OnClick', b.OnClick)
-	b.title = title
 
+	b:RegisterSignal('SEARCH_TOGGLED', 'UpdateVisible')
 	b:RegisterFrameSignal('OWNER_CHANGED', 'Update')
+	b:RegisterForClicks('anyUp')
+
+	b:SetHighlightFontObject('GameFontHighlightLeft')
+	b:SetNormalFontObject('GameFontNormalLeft')
+	b:SetToplevel(true)
 	b:Update()
 
 	return b
@@ -37,56 +38,52 @@ end
 
 --[[ Interaction ]]--
 
-function TitleFrame:OnMouseDown()
+function Title:OnMouseDown()
 	local parent = self:GetParent()
 	if not parent.profile.managed and (not Addon.sets.locked or IsAltKeyDown()) then
 		parent:StartMoving()
 	end
 end
 
-function TitleFrame:OnMouseUp()
+function Title:OnMouseUp()
 	local parent = self:GetParent()
 	parent:StopMovingOrSizing()
 	parent:RecomputePosition()
 end
 
-function TitleFrame:OnDoubleClick()
+function Title:OnDoubleClick()
 	Addon.canSearch = true
 	Addon:SendSignal('SEARCH_TOGGLED', self:GetFrameID())
 end
 
-function TitleFrame:OnClick(button)
+function Title:OnClick(button)
 	if button == 'RightButton' and LoadAddOn(ADDON .. '_Config') then
 		Addon.FrameOptions.frameID = self:GetFrameID()
 		Addon.FrameOptions:Open()
 	end
 end
 
-function TitleFrame:OnEnter()
-	if self:GetRight() > (GetScreenWidth() / 2) then
-		GameTooltip:SetOwner(self, 'ANCHOR_LEFT')
-	else
-		GameTooltip:SetOwner(self, 'ANCHOR_RIGHT')
-	end
-
-	GameTooltip:SetText(L.TipDoubleClickSearch)
+function Title:OnEnter()
+	GameTooltip:SetOwner(self:GetTipAnchor())
+	GameTooltip:SetText(self:GetText())
+	GameTooltip:AddLine(L.TipConfigure:format(L.RightClick), 1,1,1)
+	GameTooltip:AddLine(L.TipShowSearch:format(L.DoubleClick), 1,1,1)
+	GameTooltip:AddLine(L.TipMove:format(L.Drag), 1,1,1)
 	GameTooltip:Show()
-end
-
-function TitleFrame:OnLeave()
-	if GameTooltip:IsOwned(self) then
-		GameTooltip:Hide()
-	end
 end
 
 
 --[[ API ]]--
 
-function TitleFrame:Update()
+function Title:Update()
 	self:SetFormattedText(self.title, self:GetOwnerInfo().name)
 	self:GetFontString():SetAllPoints(self)
 end
 
-function TitleFrame:IsFrameMovable()
+function Title:UpdateVisible(_, busy)
+	self:SetShown(not busy)
+end
+
+function Title:IsFrameMovable()
 	return not Addon.sets.locked
 end

@@ -4,14 +4,14 @@
 --]]
 
 local ADDON, Addon = ...
-local LDB = LibStub:GetLibrary('LibDataBroker-1.1', true)
-local BrokerDisplay = Addon:NewClass('BrokerDisplay', 'Button')
+local LDB = LibStub('LibDataBroker-1.1')
+local Display = Addon.Parented:NewClass('BrokerDisplay', 'Button')
 
 
---[[ Constructor ]]--
+--[[ Construct ]]--
 
-function BrokerDisplay:New(parent)
-	local f = self:Bind(CreateFrame('Button', nil, parent))
+function Display:New(parent)
+	local f = self:Super(Display):New(parent)
 	f:SetScript('OnMouseWheel', f.OnMouseWheel)
 	f:SetScript('OnEnter', f.OnEnter)
 	f:SetScript('OnLeave', f.OnLeave)
@@ -37,6 +37,7 @@ function BrokerDisplay:New(parent)
 	text:SetFontObject('NumberFontNormalRight')
 	text:SetJustifyH('LEFT')
 
+	f.objects = {}
 	f.icon, f.text = icon, text
 	f.left, f.right = left, right
 	f:SetHeight(26)
@@ -45,7 +46,7 @@ function BrokerDisplay:New(parent)
 	return f
 end
 
-function BrokerDisplay:CreateArrowButton(text)
+function Display:CreateArrowButton(text)
 	local b = CreateFrame('Button', nil, self)
 	b:SetNormalFontObject('GameFontNormal')
 	b:SetHighlightFontObject('GameFontHighlight')
@@ -59,13 +60,13 @@ end
 
 --[[ Messages ]]--
 
-function BrokerDisplay:ObjectCreated(_, name)
+function Display:ObjectCreated(_, name)
 	if self:GetObjectName() == name then
 		self:UpdateDisplay()
 	end
 end
 
-function BrokerDisplay:AttributeChanged(_, object, attr)
+function Display:AttributeChanged(_, object, attr)
 	if self:GetObjectName() == object then
 		if attr == 'icon' then
 			self:UpdateIcon()
@@ -78,52 +79,50 @@ end
 
 --[[ Frame Events ]]--
 
-function BrokerDisplay:OnEnter()
-	local dbo = self:GetObject()
-	if not dbo then return end
+function Display:OnEnter()
+	local object = self:GetObject()
+	if object then
+		if object.OnEnter then
+			object.OnEnter(self)
+		else
+			GameTooltip:SetOwner(self, self:GetRight() > (GetScreenWidth() / 2) and 'ANCHOR_TOPLEFT' or 'ANCHOR_TOPRIGHT')
 
-	if dbo.OnEnter then
-		dbo.OnEnter(self)
-	elseif dbo.OnTooltipShow then
-		GameTooltip:SetOwner(self, 'ANCHOR_TOPLEFT')
-		dbo.OnTooltipShow(GameTooltip)
-		GameTooltip:Show()
-	else
-		GameTooltip:SetOwner(self, 'ANCHOR_TOPLEFT')
-		GameTooltip:SetText(self:GetObjectName())
-		GameTooltip:Show()
-	end
-end
+			if object.OnTooltipShow then
+				object.OnTooltipShow(GameTooltip)
+			else
+				GameTooltip:SetText(self:GetObjectName())
+			end
 
-function BrokerDisplay:OnLeave()
-	local dbo = self:GetObject()
-	if not dbo then return end
-
-	if dbo.OnLeave then
-		dbo.OnLeave(self)
-	else
-		if GameTooltip:IsOwned(self) then
-			GameTooltip:Hide()
+			GameTooltip:Show()
 		end
 	end
 end
 
-function BrokerDisplay:OnClick(...)
-	local dbo = self:GetObject()
-	if dbo and dbo.OnClick then
-		dbo.OnClick(self, ...)
+function Display:OnLeave()
+	local object = self:GetObject()
+	if object and object.OnLeave then
+		object.OnLeave(self)
+	elseif GameTooltip:IsOwned(self) then
+		GameTooltip:Hide()
 	end
 end
 
-function BrokerDisplay:OnShow()
+function Display:OnClick(...)
+	local object = self:GetObject()
+	if object and object.OnClick then
+		object.OnClick(self, ...)
+	end
+end
+
+function Display:OnShow()
 	self:Update()
 end
 
-function BrokerDisplay:OnHide()
+function Display:OnHide()
 	LDB.UnregisterAllCallbacks(self)
 end
 
-function BrokerDisplay:OnMouseWheel(direction)
+function Display:OnMouseWheel(direction)
 	if direction > 0 then
 		self:SetNextObject()
 	else
@@ -134,45 +133,38 @@ end
 
 --[[ Update ]]--
 
-function BrokerDisplay:Update()
+function Display:Update()
 	self:RegisterEvents()
 	self:UpdateDisplay()
 end
 
-function BrokerDisplay:RegisterEvents()
+function Display:RegisterEvents()
 	LDB.RegisterCallback(self, 'LibDataBroker_DataObjectCreated', 'ObjectCreated')
 	LDB.RegisterCallback(self, 'LibDataBroker_AttributeChanged', 'AttributeChanged')
 end
 
-function BrokerDisplay:UpdateDisplay()
+function Display:UpdateDisplay()
 	self:UpdateText()
 	self:UpdateIcon()
 end
 
-function BrokerDisplay:UpdateText()
+function Display:UpdateText()
 	local obj = self:GetObject()
-	local text
-
-	if obj then
-		text = obj.text or obj.label or ''
-	else
-		text = 'Select Databroker Plugin'
-	end
+	local text = obj and (obj.text or obj.label or '') or 'Select Databroker Plugin'
 
 	self.text:SetText(text)
 	self:Layout()
 end
 
-function BrokerDisplay:UpdateIcon()
+function Display:UpdateIcon()
 	local obj = self:GetObject()
 	local icon = obj and obj.icon
-
 	self.icon:SetTexture(icon)
 	self.icon:SetShown(icon)
 	self:Layout()
 end
 
-function BrokerDisplay:Layout()
+function Display:Layout()
 	if self.icon:IsShown() then
 		self.text:SetPoint('LEFT', self.icon, 'RIGHT', 2, 0)
 		self.text:SetPoint('RIGHT', self.right, 'LEFT', -2, 0)
@@ -185,33 +177,23 @@ end
 
 --[[ LDB Objects ]]--
 
-function BrokerDisplay:SetNextObject()
-	local objects = self:GetAvailableObjects()
+function Display:SetNextObject()
 	local current = self:GetObjectName()
+	local objects = self:GetAvailableObjects()
+	local i = FindInTableIf(objects, function(o) return o == current end)
 
-	for i, object in ipairs(objects) do
-		if current == object then
-			return self:SetObject(objects[(i % #objects) + 1])
-		end
-	end
-
-	self:SetObject(objects[1])
+	self:SetObject(objects[(i or 0) + 1])
 end
 
-function BrokerDisplay:SetPreviousObject()
-	local objects = self:GetAvailableObjects()
+function Display:SetPreviousObject()
 	local current = self:GetObjectName()
+	local objects = self:GetAvailableObjects()
+	local i = FindInTableIf(objects, function(o) return o == current end)
 
-	for i, object in ipairs(objects) do
-		if current == object then
-			return self:SetObject(objects[i == 1 and #objects or i - 1])
-		end
-	end
-
-	self:SetObject(objects[1])
+	self:SetObject(objects[(i or 2) - 1])
 end
 
-function BrokerDisplay:SetObject(name)
+function Display:SetObject(name)
 	self:GetProfile().brokerObject = name
 	self:UpdateDisplay()
 
@@ -220,25 +202,21 @@ function BrokerDisplay:SetObject(name)
 	end
 end
 
-function BrokerDisplay:GetObject()
+function Display:GetObject()
 	return LDB:GetDataObjectByName(self:GetObjectName())
 end
 
-function BrokerDisplay:GetObjectName()
+function Display:GetObjectName()
 	return self:GetProfile().brokerObject
 end
 
-do
-	local objects = {}
+function Display:GetAvailableObjects()
+	wipe(self.objects)
 
-	function BrokerDisplay:GetAvailableObjects()
-		wipe(objects)
-
-		for name, obj in LDB:DataObjectIterator() do
-			tinsert(objects, name)
-		end
-		sort(objects)
-
-		return objects
+	for name, obj in LDB:DataObjectIterator() do
+		tinsert(self.objects, name)
 	end
+
+	sort(self.objects)
+	return self.objects
 end

@@ -1,8 +1,249 @@
+##### 9.0.3
+* Fixed issue with tooltips in profession window.
+
+##### 9.0.2
+* Retail: fixed issue with junk icons.
+* Fixed issue hiding item slots introduced in Shadowlands.
+* Fixed visual update issue with bank slots after purchase.
+
+##### 9.0.1
+* Fixed issue introduced in classic servers.
+
+#### 9.0.0
+* Updated for Shadowlands.
+
+##### 8.3.9
+* Improved backpack server update performance.
+
+##### 8.3.8
+* Fixed issue with handling bank events introduced last version.
+
+##### 8.3.7
+* Improved efficiency in server event handling.
+* Fixed issue in new sorting algorithm.
+
+##### 8.3.6
+* All: sorting efficiency improved (with help by Pierre Sassoulas).
+* Retail: corrupted item overlay support (by mCzolko).
+
+##### 8.3.5
+* All: frame title now disappears during search for increased visibility.
+* Retail: fixed search issue with champion/follower equipment.
+
+##### 8.3.4
+* Retail: fixed issue with some allied race icons.
+
+##### 8.3.3
+* Retail: fixed tooltip issues with caged pets and keystones.
+
+##### 8.3.2
+* Retail: fixed multiple loading issues with guild bank.
+* All: updated Italian localization (thanks to kikuchi).
+
+##### 8.3.1
+* Retail: added recent races.
+* Retail: fixed issue making dropdowns unclickable.
+* Updated Chinese localization (by Adavak).
+* Updated Korean localization (by chkid).
+
+#### 8.3.0
+* Updated for Visions of Nzoth.
+* Made showing a coin icon on poor items optional.
+* Removed some forgotten debug code.
+
+##### 8.2.29
+* Can now change the transparency of frames as before.
+* Now, if no plugins like `Bagnon Scrap` are installed, marks sellable gray items with the default junk coin icon.
+
+##### 8.2.28
+* Now void storage and guild bank properly support _Flash Find_.
+
+##### 8.2.27
+* Retail: fixed multiple bugs with void storage.
+* Classic: hopefully improved key sorting behaviour.
+
+##### 8.2.26
+* Fixed bug with data-broker display region.
+* Added some backwards compatibility for out of date plugins.
+
+##### 8.2.25
+* Frames now behave properly when pressing `ESC` key.
+* Fixed equipment tooltip compare issue.
+* Fixed bank main bag tooltip issue.
+* Fixed bug with slash command opening interface options.
+* Fixed multiple issues with interface options sliders.
+
+##### 8.2.24
+* Fixed issue on classic characters without keyring.
+
+##### 8.2.23
+* Fixed mouse-over bug on retail servers.
+
+##### 8.2.22
+* Fixed display issue with spacing option slider.
+* Fixed `UpdateTooltip` error when mouse-hovering items.
+* Fixed keyring empty slot count.
+* Fixed startup issue on retail.
+
+##### 8.2.21
+* Added missing appearance options to Frame Settings.
+* Tagging release.
+
+##### 8.2.20 (beta)
+* Fixed all issues with clicking items introduced since 8.2.17.
+
+##### 8.2.19 (beta)
+* Fixed "blocked action" error when clicking items.
+* Inventory now closes when the escape key is pressed, as intended.
+* Fixed issue in retail PTR servers.
+* Updated classic TOC number.
+
+##### 8.2.18 (beta)
+* Added keyring.
+
+##### 8.2.17 (beta)
+* Visible changes
+    * New owner selection menu.
+    * New frame selection menu.
+    * New icons in interface options.
+    * Upgraded interface options color picker design.
+    * Fixed issue with reappearing inactive widgets on scrollable menus.
+* Internal changes
+    * Upgraded to Poncho-2.0 and Sushi-3.1.
+    * Reorganization of components shared functionality using Poncho-2.0 new features.
+    * Massive cleaning and standardizing of code into Ace-like modules using WildAddon-1.0.
+    * Moved internally used timer API to new library DelayMutex-1.0.
+    * No longer using taintable dropdown or static popup implementations.
+
+##### 8.2.16
+* Sorting now even faster in most situations.
+
+##### 8.2.15
+* Sorting now much faster in most situations.
+
+##### 8.2.14
+* Fixed 2 sorting bugs, causing sorting to stop or enter a loop on very specific conditions on classic servers.
+* Fixed issue with some container tooltips.
+
+##### 8.2.13
+* Fixed issue with Spanish, French, Italian, Portuguese and Russian localization.
+* Updated Chinese localization.
+* Retail:
+    * Fixed issue depositing items in the reagent bank.
+    * Fixed rare issue sorting the reagent bank.
+
+##### 8.2.12
+* Sorting:
+    * Button tooltip now shows updated instructions.
+    * Now properly sorts void storage items in retail (guild bank will be next).
+    * No longer tries to start if in combat, dead, or holding something in the cursor.
+    * Automatically stops when entering combat.
+    * Fixed issue with enchanting reagents.
+* Tooltip Counts:
+    * Now properly count items in the 1st bank slot.
+* Localization:
+    * Changed how tooltip instructions are internally generated.
+
+##### 8.2.11 (beta)
+* Sorting:
+    * Improved sorting criteria.
+    * Fixed issue with the bank slot.
+    * Fixed issue with some quest items.
+    * Sorting button now highlights until the process is done.
+* Fixed small visual issue with character select button.
+* Internally changed how some tasks are scheduled with new delay API.
+
+##### 8.2.10 (beta)
+* Can now sort items, even if the server doesn't support it:
+    * Bags and bank in classic.
+    * Void storage in retail.
+* Changed sort button icon.
+
+##### 8.2.9
+* Fixed issue with button generation on classic servers, preventing frames from being disabled.
+
+##### 8.2.8
+* Fixed issue with missing texture.
+* Finished internal file organization change (make sure to update addon while wow isn't running).
+
+##### 8.2.7
+* Fixed ordering issue with patron panel.
+* Started internal file organization change (make sure to update addon while wow isn't running).
+
+##### 8.2.6
+* Now character select button shows 3D portrait for current character. Racial and gender based icons remain the same for cached characters.
+
+##### 8.2.5
+* Fixed bug with herb pouches in classic servers (thank you Denzer - Mirage EU).
+* Ammo pouches now colored the same as quivers.
+* Added option to color soul bags.
+
+##### 8.2.4
+* Added option for quiver coloring.
+* Fixed issue with loading void storage offline before visiting vendor.
+* Fixed error with gem socketing auto display option on classic.
+
+##### 8.2.3
+* Tagging release.
+* Fixed bug in 1st bank slot.
+
+##### 8.2.2 (beta)
+* Now properly disables vault and guild configuration on classic servers.
+* Updated Ace libraries.
+* Smarter server type handling.
+
+##### 8.2.1 (beta)
+* Now compatible with World of Warcraft classic servers.
+  * Does not support keyring yet (don't have a character with a key).
+* Now using the icons from character creation for player icons.
+
+#### 8.2.0
+* Updated for Rise of Aszhara.
+* Fixed issue with opening bags in combat.
+* Currently "act as standard panel" mode is not implemented. Still trying to figure out if it is possible to do so patch 8.2 onwards.
+
+##### 8.1.9
+* Fixed issue causing items to not appropriately show their greyed out locked status.
+
+##### 8.1.8
+* Fixed issue with automatic bank sorting introduced by latest game patch.
+
+##### 8.1.7
+* Updated for World of Warcraft 8.1.5 patch.
+
+##### 8.1.6
+* Fixed root cause of "numbered string" internal bug.
+
+##### 8.1.5
+* Fixed issue with character specific settings.
+
+##### 8.1.4
+* Hotfix
+
+##### 8.1.3
+* Fixed another tooltip issue that didn't went trough last version
+
+##### 8.1.2
+* Fixed issue with non connected reals introduced in 8.1.1
+* Fixed issue with splitting item stacks in the guild bank
+* Now shows item count tooltips for singleton characters in a server
+
+##### 8.1.1
+* Now handles server names differently, which should fix server specific issues.
+   * You might need to re-login on some characters for their data to show.
+* Updated French and Russian localization.
+* Fixed issue with bag toggle button.
+
+#### 8.1.0
+* Fixed issue preventing Void Storage from working and that could also cause minor guild bank issues.
+* Updated for World of Warcraft patch 8.1.
+
 ##### 8.0.7
 * Guild Bank:
   * Fixed bug causing only up to 4 tabs being shown.
+  * Fixed issues with non-viewable tabs.
+  * Largely improved tab withdraw counter placement and behavior.
   * Redesigned and improved tab tooltips.
-  * Improved tab text placement.
   * Tab permissions are now displayed even when not selected (requires caching).
 
 ##### 8.0.6
@@ -32,7 +273,7 @@
 * Fixed issue with Aggra server.
 
 #### 8.0.0
-* Updated for Battle for Azeroth
+* Updated for Battle for Azeroth.
 
 ##### 7.3.11 (beta)
 * Now handles server names with spaces properly.
@@ -343,8 +584,7 @@
   * Now supports the new void tab!
   * Fixed several issues with the withdraw and deposit interfaces.
 
-
-##### 6.0.0 (beta)
+#### 6.0.0 (beta)
 * Updated for Warlords of Draenor.
 * Now supports the new reagent Bank, which appears as a new bag in the Bank window.
   * To deposit all reagents, click on the reagent Bank icon.
@@ -398,7 +638,7 @@
 ##### 5.4.1
 * Fixed bug with Guild Bank and void storage.
 
-##### 5.4.0
+#### 5.4.0
 * Updated for Siege of Ogrimmar.
 * Added support for the new in-game store features.
 
@@ -489,7 +729,7 @@
 ##### 5.0.1 (beta)
 * Updated for compatibility with latest Scrap version.
 
-##### 5.0.0 (beta)
+#### 5.0.0 (beta)
 * Updated and tested for Mists of Pandaria.
 * Added monk class and pandaren race.
 * Bug fixes and internal improvements.

@@ -5,11 +5,11 @@
 
 local ADDON, Addon = ...
 local L = LibStub('AceLocale-3.0'):GetLocale(ADDON)
-local SearchFrame = Addon:NewClass('SearchFrame', 'EditBox')
+local Search = Addon.Parented:NewClass('SearchFrame', 'EditBox', BackdropTemplateMixin and 'BackdropTemplate')
 
-SearchFrame.Backdrop = {
-	edgeFile = [[Interface\Tooltips\UI-Tooltip-Border]],
-	bgFile = [[Interface\ChatFrame\ChatFrameBackground]],
+Search.Backdrop = {
+	edgeFile = 'Interface/Tooltips/UI-Tooltip-Border',
+	bgFile = 'Interface/ChatFrame/ChatFrameBackground',
 	insets = {left = 2, right = 2, top = 2, bottom = 2},
 	tile = true,
 	tileSize = 16,
@@ -17,10 +17,10 @@ SearchFrame.Backdrop = {
 }
 
 
---[[ Constructor ]]--
+--[[ Construct ]]--
 
-function SearchFrame:New(parent)
-	local f = self:Bind(CreateFrame('EditBox', nil, parent))
+function Search:New(parent)
+	local f = self:Super(Search):New(parent)
 	f:SetToplevel(true)
 	f:Hide()
 
@@ -46,7 +46,7 @@ end
 
 --[[ Frame Events ]]--
 
-function SearchFrame:OnToggle(_, shownFrame)
+function Search:OnToggle(_, shownFrame)
 	if shownFrame then
 		if not self:IsShown() then
 			UIFrameFadeIn(self, 0.1)
@@ -61,17 +61,17 @@ function SearchFrame:OnToggle(_, shownFrame)
 	end
 end
 
-function SearchFrame:OnShow()
+function Search:OnShow()
 	self:RegisterSignal('SEARCH_CHANGED', 'UpdateText')
 	self:UpdateText()
 end
 
-function SearchFrame:OnHide()
+function Search:OnHide()
 	self:UnregisterSignal('SEARCH_CHANGED')
 	self:ClearFocus()
 end
 
-function SearchFrame:OnTextChanged()
+function Search:OnTextChanged()
 	local text = self:GetText():lower()
 	if text ~= Addon.search then
 		Addon.search = text
@@ -79,7 +79,7 @@ function SearchFrame:OnTextChanged()
 	end
 end
 
-function SearchFrame:OnEscape()
+function Search:OnEscape()
 	Addon.canSearch = nil
 	self:SendSignal('SEARCH_TOGGLED', nil)
 	self:Hide()
@@ -88,7 +88,7 @@ end
 
 --[[ API ]]--
 
-function SearchFrame:UpdateText()
+function Search:UpdateText()
 	if Addon.search ~= self:GetText() then
 		self:SetText(Addon.search or '')
 	end

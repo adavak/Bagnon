@@ -1,34 +1,36 @@
 --[[
 	brokerDisplay.lua
-		A databroker plugin for Bagnon
+		A databroker plugin
 --]]
 
 local ADDON, Addon = ...
-local LDB = LibStub:GetLibrary('LibDataBroker-1.1', true)
+local LDB = LibStub('LibDataBroker-1.1')
 local L = LibStub('AceLocale-3.0'):GetLocale(ADDON)
 
-local Plugin = LDB:NewDataObject(ADDON .. 'Launcher', {
+Addon:NewModule('LDB', LDB:NewDataObject(ADDON .. 'Launcher', {
 	type = 'launcher',
 	icon = [[Interface\Icons\INV_Misc_Bag_07]],
 	label = ADDON,
 
+	OnEnable = function(self)
+		self:RegisterEvent('BAG_UPDATE_DELAYED', 'OnUpdate')
+	end,
+
 	OnClick = function(self, button)
-		if button == 'LeftButton' then
-			if IsShiftKeyDown() then
-				Addon:ShowOptions()
-			else
-				Addon:ToggleFrame('inventory')
-			end
+		if IsShiftKeyDown() then
+			Addon:ShowOptions()
+		elseif button == 'LeftButton' then
+			Addon.Frames:Toggle('inventory')
 		elseif button == 'RightButton' then
-			Addon:ToggleFrame('bank')
+			Addon.Frames:Toggle('bank')
 		end
 	end,
 
 	OnTooltipShow = function(tooltip)
 		tooltip:AddLine(ADDON)
-		tooltip:AddLine(L.TipShowInventory, 1, 1, 1)
-		tooltip:AddLine(L.TipShowBank, 1, 1, 1)
-		tooltip:AddLine(L.TipShowOptions, 1, 1, 1)
+		tooltip:AddLine(L.TipShowInventory:format(L.LeftClick), 1, 1, 1)
+		tooltip:AddLine(L.TipShowBank:format(L.RightClick), 1, 1, 1)
+		tooltip:AddLine(L.TipShowOptions:format(L.ShiftClick), 1, 1, 1)
 	end,
 
 	OnUpdate = function(self)
@@ -43,6 +45,4 @@ local Plugin = LDB:NewDataObject(ADDON .. 'Launcher', {
 
 		self.text = format('%d/%d', free, total)
 	end
-})
-
-Addon.RegisterEvent(Plugin, 'BAG_UPDATE_DELAYED', 'OnUpdate')
+}))
